@@ -1,0 +1,197 @@
+# 开发环境配置
+debug: false
+server:
+  port: 8080 #tomcat运行端口
+  servlet:
+    context-path: /
+
+spring:
+  datasource:
+    dynamic:
+      datasource:
+        master:
+          driver-class-name: oracle.jdbc.OracleDriver
+          #url: jdbc:oracle:thin:@(DESCRIPTION =(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=192.168.6.251)(PORT=1521))(LOAD_BALANCE=yes))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=dgioc)))
+          url: ENC(QC+ytjQLKq7+x7pn386rdupH4Oi7yx7OPi9WTQr95YVr7GkMsMligzfB4fMbGz+ncPv31BFGCMg=)
+          username: ENC(DMuFOc7WARUlqZHTusvt1Q==)
+          password: ENC(5NF4Jbp+6OwSezBNNrZoEJ3Ew4H9H3kz)
+          hikari:
+            minimum-idle: 10
+            maximum-pool-size: 300
+  redis:
+    # redis数据库索引（默认为0），我们使用索引为3的数据库，避免和其他数据库冲突
+    database: 0
+    # redis服务器地址（默认为localhost）
+    host: 19.104.48.14
+    # redis端口（默认为6379）
+    port: 6379
+    # redis访问密码（默认为空）
+    password: ENC(hxg6fYv9F+B+wwOAaW/OpmvReKRDmD9e)
+    # redis连接超时时间（单位为毫秒）
+    timeout: 50000
+    # redis连接池配置
+    lettuce:
+      pool:
+        # 最大可用连接数（默认为8，负数表示无限）
+        max-active: 8
+        # 最大空闲连接数（默认为8，负数表示无限）
+        max-idle: 8
+        # 最小空闲连接数（默认为0，该值只有为正数才有作用）
+        min-idle: 0
+        # 从连接池中获取连接最大等待时间（默认为-1，单位为毫秒，负数表示无限）
+        max-wait: 5000
+
+  kafka:
+    #消费者配置
+    consumer:
+      bootstrap-servers: 19.104.48.14:9091 #kafka服务器地址 多个以,号隔开
+      group-id: DATALAKE #消费者分组id,同一个分组的消费者不会读取到同一个消息
+      enable-auto-commit: false #启用自动提交偏移量
+      #auto-commit-interval: 100 #设置偏移量提交间隔
+      max-poll-records: 3 #最大批量读取条数
+    #生产者配置
+    producer:
+      bootstrap-servers: 19.104.48.14:9091 #kafka服务器地址 多个以,号隔开
+      batch-size: 16384  #每次批量发送信息的数量
+      buffer-memory: 33554432 #达到该缓冲区大小就发送数据
+      linger-ms: 5000 #最多等待多长时间
+
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 100MB
+
+ljdp:
+  ftpserver:
+    url: 19.104.48.14
+    port: 21
+    mode: PASV
+    username: ENC(cN8VeilkXL9AZXR+CyYvKA==)
+    password: ENC(WNQzyerlRsYVk8xFkWeg+6sTuJz/48zo)
+    remote-path: /
+    local-temp-path: /tmp
+  dfs:
+    ftp2http-proxy: http://19.104.48.14/iocadminsvc/ftp
+    ftp2http-download: http://19.104.48.14/iocadminsvc/ljdp/dfs/downloadByFid.act?fid=
+  fileupload:
+    # 覆盖batch.fileupload.path配置
+    local-path: /data/file
+  security:
+    api:
+      skey: ENC(RWbyGtRsQC+ku6TelTC4SO6K+1X9OnUF7lgwlbWw2uZYD91tf/+qw0RzHnnkTDJv)
+  minio:
+    endpoint: http://19.104.43.196:9000
+    access-key: AKIUOOSFODNN7E9VMPLE
+    secret-key: ENC(aO8SNVE6XCR4z2LQCcvX+hhAkE+ghdF57/CrKAhz4SU=)
+    download-proxy: /admin/dfs/objectcatalog/download?objectkey=
+
+iocplatform:
+  url:
+    ioc-admin: http://ioc-admin-svc:8080
+    # rootId
+    admin-depart-root-id: 764c858f-42a0-4a2e-8f84-9a5abec2f772
+    # 查询此ID下的子机构
+    admin-depart-get-child: ${iocplatform.url.ioc-admin}/admin/org/sysOrg/doSubset?orgid=
+    # 根据ID获取
+    admin-depart-get: ${iocplatform.url.ioc-admin}/admin/org/sysOrg/{id}
+    # [树]获取所有组织
+    admin-depart-get-tree: ${iocplatform.url.ioc-admin}/admin/org/sysOrg/doZTreeToElement
+    # 顶级部门
+    admin-depart-top-dept: ${iocplatform.url.ioc-admin}/admin/org/sysOrg/doTopDepartment?id={orgid}
+    # login接口
+    admin-user-login: ${iocplatform.url.ioc-admin}/admin/user/sysUser/login
+    # 根据orgType查询组织机构
+    orgtype-get-depart: ${iocplatform.url.ioc-admin}/admin/org/sysOrg/search?eq_orgtype={eq_orgtype}&page={page}&size={size}
+    # 获取ZTree （充当全树使用）
+    admin-depart-ztree: ${iocplatform.url.ioc-admin}/admin/org/sysOrg/doZTree
+    # 根据组织机构和角色查询用户列表
+    org-role-get-users: ${iocplatform.url.ioc-admin}/admin/user/sysUser/searchUsersByOrgAndRole?orgid={orgid}&deptcode={deptcode}&roleAlias={roleAlias}
+    # 账号
+    user-account: iocadmin
+    #密码
+    user-pwd: iocadmin
+
+datalake:
+  # 获取全局唯一ID接口
+  sequence:
+    # 是否开启安全校验（JWT）
+    security-mode: false
+    # key
+    key: datalakeseq
+    # secret
+    secret: B6CZm99aVcHUsabTCm1u
+    # global-unique-id配置样例（最后要加/）：http://127.0.0.1:8081/sequence/getSequenceNumber/
+    global-unique-id: http://19.104.50.204/iocsequencesvc/sequence/getSequenceNumber/
+    # 若安全模式开启，则调用下面URL（datalake.sequence.global-unique-id失效）
+    global-unique-id-on-security: http://19.104.50.204/iocsequencesvc/sequence/getSequenceNumber
+  ui:
+    url:
+      ip-port: https://19.104.48.14
+      # 数据湖前端订阅页面，用于给数据集跳转
+      audit-page: ${datalake.ui.url.ip-port}/datalakeweb/res-manage/take/{resourceId}/{resourceType}
+  svc:
+    api:
+      # 后端提交接口RequestMapping 统一请求地址用apiCode区分
+      apisync: /\S+/datalake/apisync/resource/{apiCode}
+  # 数据库类型（主湖：PostgreSQL；子湖：Oracle）
+  database-type: PostgreSQL
+
+iocpaas:
+  url:
+    ioc-paas: http://ioc-paas-svc:8080
+    # 推送智能API查询接口信息到网关平台
+    iocpaas-syncCustomApi: ${iocpaas.url.ioc-paas}/gateway/apis/spInstanceApi/syncCustomApi
+    # 网关平台-获取API凭证
+    iocpaas-CustomApiCredential: ${iocpaas.url.ioc-paas}/gateway/apis/spInstanceApi/getCustomApiCredential
+    # 通过token获取token用户信息
+    iocpaas-token-user-get: ${iocpaas.url.ioc-paas}/certificate/api/spApiCredential/decodeToken
+    # 获取网关代理地址
+    gateway-ipport: ${iocpaas.url.ioc-paas}/gateway/apis/spInstanceApi/getKongProxy
+    # 根据token获取用户信息
+    iocpaas-decodeToken: ${iocpaas.url.ioc-paas}/certificate/api/spApiCredential/decodeToken
+    # 同步删除网关API接口
+    sync-deleteApi: ${iocpaas.url.ioc-paas}/gateway/apis/spInstanceApi/syncCustomApi/{moduleType}/{customApiId}
+    # 获取网关API凭证和aes秘钥和偏移量
+    iocpass-spDlResJwt: ${iocpaas.url.ioc-paas}/certificate/spDlResJwt/{resourceCode}
+    # api共享到市场
+    iocpass-api-publish: ${iocpaas.url.ioc-paas}/gateway/apis/spInstanceApi/syncCustomApi/publish
+    # api从市场下架
+    iocpass-api-unpublish: ${iocpaas.url.ioc-paas}/gateway/apis/spInstanceApi/syncCustomApi/unpublish
+
+# 汇聚平台
+dts:
+  integration:
+    # 数据源相关
+    datasource:
+      url: http://ioc-dts-integrat-svc:8080
+#      urlv2: http://ioc-dts-integrat-svc.dts2:8080
+      # 根据数据库类型， 查询数据库
+      search: ${dts.integration.datasource.url}/dts/integration/dtsDatasource/search?
+      # 根据数据库， 查询表
+      get-table-list: ${dts.integration.datasource.url}/dts/integration/dataLake/queryTableAndViewList?
+      # 根据表， 查询字段
+      get-column-list: ${dts.integration.datasource.url}/dts/integration/dtsDatasource/getColumnList?
+      # 统计表的数据量（select count(1) from table）
+      count-by-table: ${dts.integration.datasource.url}/dts/integration/dtsDatasource/getTableDataRows?
+      # 备库数据资产统计结果
+      result-search: ${dts.integration.datasource.url}/dts/integration/statistic/dtsStatisticsResult/search?
+      # 根据资源目录编码获取任务信息
+      get-task-info: ${dts.integration.datasource.url}/dts/job/getDtsJobByResourceCode?
+      # 根据数据源ID和表名，分页查询表数据
+      query-table-data: ${dts.integration.datasource.url}/dts/integration/dataLake/findTableData?
+      # 通过数据源ID获取加密后的JDBC链接信息
+      get-dataSource-connInfo: ${dts.integration.datasource.url}/dts/integration/dtsDatasource/getById/{id}
+    # 站内信相关
+    message:
+      # 保存站内信
+      save-internal-message: ${dts.integration.datasource.url}/dts/integration/dtsMessage
+
+kafka:
+  topic1: datalake-topic1 #kafka事件发布
+  topic2: datalake-topic2 #kafka事件处理
+
+# 是否本地开发环境
+dev:
+  devFlag: false
+# 当前局ID 设置为生态局
+current-dept-top-id: 4028818e41fb0cad0141fb0e9b26003c

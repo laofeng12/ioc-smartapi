@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/base.xml" />
+
+    <!-- 测试环境+开发环境. 多个使用逗号隔开. -->
+    <springProfile name="dev">
+        <logger name="org.springframework" level="INFO" />
+        <logger name="org.openjava" level="DEBUG" />
+        <logger name="org.ljdp" level="DEBUG" />
+    </springProfile>
+
+    <springProfile name="test">
+        <logger name="org.springframework" level="INFO" />
+        <logger name="org.openjava" level="INFO" />
+        <logger name="org.ljdp" level="INFO" />
+    </springProfile>
+
+    <!-- 生产环境. -->
+    <springProfile name="prod">
+        <logger name="org.springframework" level="INFO" />
+        <logger name="org.openjava" level="INFO" />
+        <logger name="org.ljdp" level="INFO" />
+    </springProfile>
+    <!--   文件输出配置   -->
+    <!-- 文件路径  -->
+    <property name="LOG_PATH" value="./datake-kafka-logs" />
+    <!--  规制  -->
+    <appender name="JOBFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <append>true</append>
+        　　　　　<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+        　　　　　   <fileNamePattern>${LOG_PATH}/kafka.%d{yyyy-MM-dd}.log</fileNamePattern>
+        　　　　　   <maxHistory>1</maxHistory>
+        　　　　　</rollingPolicy>
+        　　　　　<encoder>
+        <pattern>%d{yyyy-MM-dd HH:mm:ss} %c{0}.%M: %msg%n</pattern>
+        <charset>UTF-8</charset>
+        　　　　　</encoder>
+        　　</appender>
+<!--    <logger name="org.springframework" level="INFO" >-->
+<!--        <appender-ref ref="JOBFILE" />-->
+<!--    </logger>-->
+<!--    <logger name="org.openjava" level="INFO" >-->
+<!--        <appender-ref ref="JOBFILE" />-->
+<!--    </logger>-->
+<!--    <logger name="org.ljdp" level="INFO" >-->
+<!--        <appender-ref ref="JOBFILE" />-->
+<!--    </logger>-->
+
+</configuration>

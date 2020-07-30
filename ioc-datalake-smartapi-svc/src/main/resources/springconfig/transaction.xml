@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/aop 
+		http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd
+		">
+	<!-- ljdp事务设置-->
+	<aop:config>
+		<aop:advisor pointcut="execution(* org.ljdp.core.service.GeneralService+.*(..))" advice-ref="LjdpTxAdvice"/>
+	</aop:config>
+	
+	<!-- advice定义-->
+	<tx:advice id="LjdpTxAdvice">
+		<tx:attributes>
+			<tx:method name="get*" read-only="true" />
+			<tx:method name="doFind*" read-only="true" />
+			<tx:method name="doQuery*" read-only="true" />
+			<tx:method name="doCount*" read-only="true" />
+
+			<tx:method name="do*" propagation="REQUIRED" rollback-for="Throwable" />
+		</tx:attributes>
+	</tx:advice>
+	
+	<!-- 业务bean事务属性设置 -->
+	<tx:advice id="txAdvice">
+		<tx:attributes>
+			<tx:method name="find*" read-only="true" />
+			<tx:method name="get*" read-only="true" />
+			<tx:method name="query*" read-only="true" />
+			<tx:method name="search*" read-only="true" />
+			<tx:method name="*" propagation="REQUIRED" isolation="READ_COMMITTED"
+				rollback-for="Exception"  />
+		</tx:attributes>
+	</tx:advice>
+	<aop:config>
+		<aop:advisor pointcut="execution(* com.openjava..*.service.*Impl.*(..))"
+			advice-ref="txAdvice" />
+	</aop:config>
+	
+</beans>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.openjava.datalake.push.dao.EventProcessMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.openjava.datalake.push.domain.EventProcess">
+        <id column="PROCESS_ID" property="processId" />
+        <result column="RECORD_SEQUENCES" property="recordSequences" />
+        <result column="STATUS" property="status" />
+        <result column="BTYPE" property="btype" />
+        <result column="BID" property="bid" />
+        <result column="JSON_BODY" property="jsonBody" />
+        <result column="RETRY_RULE_ID" property="retryRuleId" />
+        <result column="RETRY" property="retry" />
+        <result column="RETRY_TIMES" property="retryTimes" />
+    </resultMap>
+
+</mapper>

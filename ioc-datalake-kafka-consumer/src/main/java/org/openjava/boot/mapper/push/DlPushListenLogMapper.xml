@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.openjava.datalake.push.dao.DlPushListenLogMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.openjava.datalake.push.domain.DlPushListenLog">
+        <id column="LISTEN_LOG_ID" property="listenLogId" />
+        <result column="RECORD_SEQUENCES" property="recordSequences" />
+        <result column="JSON_BODY" property="jsonBody" />
+        <result column="STATES" property="states" />
+        <result column="BID" property="bid" />
+        <result column="CREATE_TIME" property="createTime" />
+        <result column="RETRY_TIMES" property="retryTimes" />
+        <result column="MESSAGE" property="message" />
+        <result column="RETRY_RULE_ID" property="retryRuleId" />
+        <result column="UPDATE_TIME" property="updateTime" />
+    </resultMap>
+
+</mapper>

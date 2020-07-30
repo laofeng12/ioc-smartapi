@@ -1,0 +1,197 @@
+# 开发环境配置
+debug: false
+server:
+  port: 8080 #tomcat运行端口
+  servlet:
+    context-path: /
+
+#mybatis:
+#  config-location: classpath:mybatis-config.xml
+#  typeAliasesPackage: com.openjava.example.mybatis.domain
+#  mapperLocations:
+#    -classpath:com.openjava.example.*.mapper/*.xml
+
+spring:
+  datasource:
+    dynamic:
+      datasource:
+        master:
+          driver-class-name: oracle.jdbc.OracleDriver
+          url: jdbc:oracle:thin:@219.135.182.2:8521/dgioc
+          username: dgioc
+          password: ch#123456
+          hikari:
+            maximum-pool-size: 5
+            validation-timeout: 1000
+            connection-timeout: 5000
+
+  redis:
+    # redis数据库索引（默认为0），我们使用索引为3的数据库，避免和其他数据库冲突
+    database: 4
+    # redis服务器地址（默认为localhost）
+    host: 219.135.182.2
+    # redis端口（默认为6379）
+    port: 6379
+    # redis访问密码（默认为空）
+    password: Chjy@0769
+    # redis连接超时时间（单位为毫秒）
+    timeout: 10000
+    # redis连接池配置
+    jedis:
+      pool:
+        # 最大可用连接数（默认为8，负数表示无限）
+        max-active: 8
+        # 最大空闲连接数（默认为8，负数表示无限）
+        max-idle: 8
+        # 最小空闲连接数（默认为0，该值只有为正数才有作用）
+        min-idle: 0
+        # 从连接池中获取连接最大等待时间（默认为-1，单位为毫秒，负数表示无限）
+        max-wait: 5000
+  kafka:
+    #消费者配置
+    consumer:
+      bootstrap-servers: 219.135.182.2:19092 #kafka服务器地址 多个以,号隔开
+      group-id: DATALAKE #消费者分组id,同一个分组的消费者不会读取到同一个消息
+      enable-auto-commit: false #启用自动提交偏移量
+      #auto-commit-interval: 100 #设置偏移量提交间隔
+      max-poll-records: 3 #最大批量读取条数
+    #生产者配置
+    producer:
+      bootstrap-servers: 219.135.182.2:19092 #kafka服务器地址 多个以,号隔开
+      batch-size: 16384  #每次批量发送信息的数量
+      buffer-memory: 33554432 #达到该缓冲区大小就发送数据
+      linger-ms: 5000 #最多等待多长时间
+
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 100MB
+
+ljdp:
+  ftpserver:
+    url: 120.77.146.174
+    port: 6021
+    mode: PASV
+    username: chjykj
+    password: ljdp0769
+    remote-path: /
+    local-temp-path: C:/temp
+  dfs:
+    ftp2http-proxy: http://219.135.182.2:31075/ftp
+    ftp2http-download: http://219.135.182.2:31075/ljdp/dfs/downloadByFid.act?fid=
+  fileupload:
+    # 覆盖batch.fileupload.path配置
+    local-path: C:/temp/ftp
+  security:
+    api:
+      skey: abdefghijklmnopqrstuvwxyz1234567890
+
+iocplatform:
+  url:
+    ioc-admin: http://219.135.182.3:30030
+    # rootId
+    admin-depart-root-id: 764c858f-42a0-4a2e-8f84-9a5abec2f772
+    # 查询此ID下的子机构
+    admin-depart-get-child: ${iocplatform.url.ioc-admin}/admin/org/sysOrg/doSubset?orgid=
+    # 根据ID获取
+    admin-depart-get: ${iocplatform.url.ioc-admin}/admin/org/sysOrg/{id}
+    # [树]获取所有组织
+    admin-depart-get-tree: ${iocplatform.url.ioc-admin}/admin/org/sysOrg/doZTreeToElement
+    # 顶级部门
+    admin-depart-top-dept: ${iocplatform.url.ioc-admin}/admin/org/sysOrg/doTopDepartment?id={orgid}
+    # login接口
+    admin-user-login: ${iocplatform.url.ioc-admin}/admin/user/sysUser/login
+    # 根据orgType查询组织机构
+    orgtype-get-depart: ${iocplatform.url.ioc-admin}/admin/org/sysOrg/search?eq_orgtype={eq_orgtype}&page={page}&size={size}
+    # 获取ZTree （充当全树使用）
+    admin-depart-ztree: ${iocplatform.url.ioc-admin}/admin/org/sysOrg/doZTree
+    # 账号
+    user-account: iocadmin
+    #密码
+    user-pwd: iocadmin
+
+datalake:
+  # 获取全局唯一ID接口
+  sequence:
+    # 是否开启安全校验（JWT）
+    security-mode: true
+    # key
+    key: datalakeseq
+    # secret
+    secret: B6CZm99aVcHUsabTCm1u
+    # global-unique-id配置样例（最后要加/）：http://127.0.0.1:8081/sequence/getSequenceNumber/
+    global-unique-id: http://219.135.182.2:6180/iocsequencesvc/sequence/getSequenceNumber/
+    # 若安全模式开启，则调用下面URL（datalake.sequence.global-unique-id失效）
+    global-unique-id-on-security: http://219.135.182.2:6180/iocsequencesvc/sequence/getSequenceNumber/
+  ui:
+    url:
+      ip-port: http://219.135.182.2:30003
+      # 数据湖前端订阅页面，用于给数据集跳转
+      audit-page: ${datalake.ui.url.ip-port}/datalakeweb/res-manage/take/{resourceId}/{resourceType}
+  svc:
+    api:
+      # 后端提交接口RequestMapping 统一请求地址用apiCode区分
+      apisync: /datalake/apisync/resource/{apiCode}
+  # 数据库类型（主湖：PostgreSQL；子湖：Oracle）
+  database-type: PostgreSQL
+
+iocpaas:
+  url:
+    ioc-paas: http://219.135.182.2:31012
+    # 推送智能API查询接口信息到网关平台
+    iocpaas-syncCustomApi: ${iocpaas.url.ioc-paas}/gateway/apis/spInstanceApi/syncCustomApi
+    # 网关平台-获取API凭证
+    iocpaas-CustomApiCredential: ${iocpaas.url.ioc-paas}/gateway/apis/spInstanceApi/getCustomApiCredential
+    # 通过token获取token用户信息
+    iocpaas-token-user-get: ${iocpaas.url.ioc-paas}/certificate/api/spApiCredential/decodeToken
+    # 获取网关代理地址
+    gateway-ipport: ${iocpaas.url.ioc-paas}/gateway/apis/spInstanceApi/getKongProxy
+    # 根据token获取用户信息
+    iocpaas-decodeToken: ${iocpaas.url.ioc-paas}/certificate/api/spApiCredential/decodeToken
+    # 同步删除网关API接口
+    sync-deleteApi: ${iocpaas.url.ioc-paas}/gateway/apis/spInstanceApi/syncCustomApi/{moduleType}/{customApiId}
+    # 获取网关API凭证和aes秘钥和偏移量
+    iocpass-spDlResJwt: ${iocpaas.url.ioc-paas}/certificate/spDlResJwt/{resourceCode}
+
+# 汇聚平台
+dts:
+  integration:
+    # 数据源相关
+    datasource:
+      url: http://219.135.182.2:6181/datatransferweb
+      # 根据数据库类型， 查询数据库
+      search: ${dts.integration.datasource.url}/dts/integration/dtsDatasource/search?
+      # 根据数据库， 查询表
+      get-table-list: ${dts.integration.datasource.url}/dts/integration/dtsDatasource/getTableList?
+      # 根据表， 查询字段
+      get-column-list: ${dts.integration.datasource.url}/dts/integration/dtsDatasource/getColumnList?
+      # 统计表的数据量（select count(1) from table）
+      count-by-table: ${dts.integration.datasource.url}/dts/integration/dtsDatasource/getTableDataRows?
+      # 备库数据资产统计结果
+      result-search: ${dts.integration.datasource.url}/dts/integration/statistic/dtsStatisticsResult/search?
+    # 站内信相关
+    message:
+      url: http://219.135.182.2:6181/datatransferweb
+      # 保存站内信
+      save-internal-message: ${dts.integration.message.url}/dts/integration/dtsMessage
+
+#如果需要新增topic，直接配置文件多加一个如topic2,kafka配置参数auto.create.topics.enable配置为true会自动创建新topic
+kafka:
+  topic1: datalake-topic1 #kafka事件发布
+  topic2: datalake-topic2 #kafka事件处理
+
+# 是否本地开发环境
+dev:
+  devFlag: true
+
+#计划任务配置
+schedule:
+  execution:
+    waitqueue: 0/5 * * * * ?
+  require-work-order:
+    statistics: 0 0 0 * * ?
+  # 数据资产统计 10分钟一次
+  data-asset-statistics: 0 0/10 * * * ?
+  # 监听推送 5秒一次
+  push-lister: 0/5 * * * * ?
+

@@ -1,0 +1,157 @@
+#开发环境配置
+debug: false
+server:
+  #tomcat运行端口
+  port: 8081
+  servlet:
+    context-path: /
+
+spring:
+  datasource:
+    driver-class-name: oracle.jdbc.OracleDriver
+    url: jdbc:oracle:thin:@192.168.6.251:1521/dgioc
+    username: ENC(292IdUz51a/bz36kaKqK9g==)
+    password: ENC(F7EoCkBjwxhKfDyBPhnHJyMLMXeAEAWn)
+    druid:
+      initial-size: 5
+      max-active: 100
+      min-idle: 5
+      max-wait: 30000 #配置获取连接等待超时的时间
+      # 是否缓存preparedStatement，也就是PSCache。PSCache对支持游标的数据库性能提升巨大，比如说oracle。在mysql下建议关闭
+      pool-prepared-statements: true
+      max-pool-prepared-statement-per-connection-size: 20
+      max-open-prepared-statements: 20 #和上面的等价
+      validation-query: SELECT 'x' FROM DUAL
+      validation-query-timeout: 1
+      test-on-borrow: false
+      test-on-return: false
+      test-while-idle: true
+      filters: stat
+
+  redis:
+    # redis数据库索引（默认为0），我们使用索引为3的数据库，避免和其他数据库冲突
+    database: 4
+    # redis服务器地址（默认为localhost）
+    host: 192.168.6.251
+    #host: 127.0.0.1
+    # redis端口（默认为6379）
+    port: 6379
+    # redis访问密码（默认为空）
+    password: Chjy@0769
+    # redis连接超时时间（单位为毫秒）
+    timeout: 10000
+    # redis连接池配置
+    lettuce:
+      pool:
+        # 最大可用连接数（默认为8，负数表示无限）
+        max-active: 8
+        # 最大空闲连接数（默认为8，负数表示无限）
+        max-idle: 8
+        # 最小空闲连接数（默认为0，该值只有为正数才有作用）
+        min-idle: 0
+        # 从连接池中获取连接最大等待时间（默认为-1，单位为毫秒，负数表示无限）
+        max-wait: 5000
+
+  kafka:
+    #消费者配置
+    consumer:
+      bootstrap-servers: 192.168.6.120:9092 #kafka服务器地址 多个以,号隔开
+      group-id: DATALAKE #消费者分组id,同一个分组的消费者不会读取到同一个消息
+      enable-auto-commit: false #启用自动提交偏移量
+      #auto-commit-interval: 100 #设置偏移量提交间隔
+      max-poll-records: 3 #最大批量读取条数
+    #生产者配置
+    producer:
+      bootstrap-servers: 192.168.6.120:9092 #kafka服务器地址 多个以,号隔开
+      batch-size: 16384  #每次批量发送信息的数量
+      buffer-memory: 33554432 #达到该缓冲区大小就发送数据
+      linger-ms: 5000 #最多等待多长时间
+
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 100MB
+
+iocplatform:
+  url:
+    ioc-admin: http://ioc-admin-svc.dmp:8080
+
+iocpaas:
+  url:
+    ioc-paas: http://219.135.182.2:31012
+    # 网关平台-注册
+    iocpaas-syncCustomApi: ${iocpaas.url.ioc-paas}/gateway/apis/spInstanceApi/syncCustomApi
+    # 网关平台-获取API凭证
+    iocpaas-CustomApiCredential: ${iocpaas.url.ioc-paas}/gateway/apis/spInstanceApi/getCustomApiCredential
+    # 通过token获取token用户信息
+    iocpaas-token-user-get: ${iocpaas.url.ioc-paas}/certificate/api/spApiCredential/decodeToken
+    # 获取网关代理地址
+    gateway-ipport: ${iocpaas.url.ioc-paas}/gateway/apis/spInstanceApi/getKongProxy
+    # 根据token获取用户信息
+    iocpaas-decodeToken: ${iocpaas.url.ioc-paas}/certificate/api/spApiCredential/decodeToken
+    # 同步删除网关API接口
+    sync-deleteApi: ${iocpaas.url.ioc-paas}/gateway/apis/spInstanceApi/syncCustomApi/{moduleType}/{customApiId}
+    # 获取网关API凭证和aes秘钥和偏移量
+    iocpass-spDlResJwt: ${iocpaas.url.ioc-paas}/certificate/spDlResJwt/{resourceCode}
+
+# 汇聚平台
+dts:
+  integration:
+    # 数据源相关
+    datasource:
+      url: http://ioc-dts-integrat-svc.dmp:8080
+      urlv2: http://ioc-dts-integrat-svc.dts2:8080
+      # 根据数据库类型， 查询数据库
+      search: ${dts.integration.datasource.url}/dts/integration/dtsDatasource/search?
+      # 根据数据库， 查询表
+      get-table-list: ${dts.integration.datasource.url}/dts/integration/dtsDatasource/getTableList?
+      # 根据表， 查询字段
+      get-column-list: ${dts.integration.datasource.url}/dts/integration/dtsDatasource/getColumnList?
+      # 统计表的数据量（select count(1) from table）
+      count-by-table: ${dts.integration.datasource.url}/dts/integration/dtsDatasource/getTableDataRows?
+      # 备库数据资产统计结果
+      result-search: ${dts.integration.datasource.url}/dts/integration/statistic/dtsStatisticsResult/search?
+      # 根据资源目录编码获取任务信息
+      get-task-info: ${dts.integration.datasource.url}/dts/job/getDtsJobByResourceCode?
+      # 根据数据源ID和表名，分页查询表数据
+      query-table-data: ${dts.integration.datasource.url}/dts/integration/dataLake/findTableData?
+      # 通过数据源ID获取加密后的JDBC链接信息
+      get-dataSource-connInfo: ${dts.integration.datasource.url}/dts/integration/dtsDatasource/getById/{id}
+
+ljdp:
+  ftpserver:
+    url: 120.77.146.174
+    port: 6021
+    mode: PASV
+    username: chjykj
+    password: ljdp0769
+    remote-path: /
+    local-temp-path: C:/temp
+  dfs:
+    ftp2http-proxy: http://219.135.182.2:31075/ftp
+    ftp2http-download: http://219.135.182.2:31075/ljdp/dfs/downloadByFid.act?fid=
+  fileupload:
+    # 覆盖batch.fileupload.path配置
+    local-path: C:/temp/ftp
+  security:
+    api:
+      skey: abdefghijklmnopqrstuvwxyz1234567890
+
+kafka:
+  topic1: datalake-topic1 #kafka事件发布
+  topic2: datalake-topic2 #kafka事件处理
+
+#计划任务配置
+schedule:
+  execution:
+    waitqueue: 0/5 * * * * ?
+  require-work-order:
+    statistics: 0 0 0 * * ?
+  # 数据资产统计 10分钟一次
+  data-asset-statistics: 0 0/10 * * * ?
+  # 资源目录信息统计 两小时一次
+  resource-statistics: 0 0 0/2 * * ?
+  # 组织机构表资源目录数量统计，两小时一次
+  organization-resource-statistics: 0 0 0/2 * * ?
+  # 监听推送 5秒一次
+  push-lister: 0/5 * * * * ?

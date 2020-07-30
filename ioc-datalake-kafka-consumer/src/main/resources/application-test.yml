@@ -1,0 +1,122 @@
+#开发环境配置
+debug: false
+server:
+  port: 8080 #tomcat运行端口
+  servlet:
+    context-path: /
+#  tomcat:
+#    max-connections: 100
+#    accept-count: 10
+#    max-threads: 3
+#    basedir: F:/temp/tomcat
+
+spring:
+  datasource:
+    driver-class-name: oracle.jdbc.OracleDriver
+    url: jdbc:oracle:thin:@192.168.6.251:1521:orcl
+    username: c##dgioc
+    password: bigdata@0769
+    druid:
+      initial-size: 1
+      max-active: 600
+      min-idle: 1
+      max-wait: 20000 #配置获取连接等待超时的时间
+      pool-prepared-statements: false
+      max-pool-prepared-statement-per-connection-size: 20
+      max-open-prepared-statements: 20 #和上面的等价
+      validation-query: SELECT 'x' FROM DUAL
+      validation-query-timeout: 1
+      test-on-borrow: false
+      test-on-return: false
+      test-while-idle: true
+      filters: stat
+
+  redis:
+    # redis数据库索引（默认为0），我们使用索引为3的数据库，避免和其他数据库冲突
+    database: 3
+    # redis服务器地址（默认为localhost）
+    host: 192.168.6.251
+    #host: 127.0.0.1
+    # redis端口（默认为6379）
+    port: 6379
+    # redis访问密码（默认为空）
+    password: Chjy@0769
+    # redis连接超时时间（单位为毫秒）
+    timeout: 10000
+    # redis连接池配置
+    jedis:
+      pool:
+        # 最大可用连接数（默认为8，负数表示无限）
+        max-active: 30
+        # 最大空闲连接数（默认为8，负数表示无限）
+        max-idle: 8
+        # 最小空闲连接数（默认为0，该值只有为正数才有作用）
+        min-idle: 0
+        # 从连接池中获取连接最大等待时间（默认为-1，单位为毫秒，负数表示无限）
+        max-wait: 5000
+
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 100MB
+
+iocplatform:
+  url:
+    ioc-admin: http://ioc-admin-svc:8080
+
+iocpaas:
+  url:
+    ioc-paas: http://219.135.182.2:31012
+    # 网关平台-注册
+    iocpaas-syncCustomApi: ${iocpaas.url.ioc-paas}/gateway/apis/spInstanceApi/syncCustomApi
+    # 网关平台-获取API凭证
+    iocpaas-CustomApiCredential: ${iocpaas.url.ioc-paas}/gateway/apis/spInstanceApi/getCustomApiCredential
+    # 通过token获取token用户信息
+    iocpaas-token-user-get: ${iocpaas.url.ioc-paas}/certificate/api/spApiCredential/decodeToken
+    # 获取网关代理地址
+    gateway-ipport: ${iocpaas.url.ioc-paas}/gateway/apis/spInstanceApi/getKongProxy
+    # 根据token获取用户信息
+    iocpaas-decodeToken: ${iocpaas.url.ioc-paas}/certificate/api/spApiCredential/decodeToken
+    # 同步删除网关API接口
+    sync-deleteApi: ${iocpaas.url.ioc-paas}/gateway/apis/spInstanceApi/syncCustomApi/{moduleType}/{customApiId}
+    # 获取网关API凭证和aes秘钥和偏移量
+    iocpass-spDlResJwt: ${iocpaas.url.ioc-paas}/certificate/spDlResJwt/{resourceCode}
+
+# 汇聚平台
+dts:
+  integration:
+    # 数据源相关
+    datasource:
+      # test（服务平台 的 汇聚平台）
+#      url: http://ioc-dts-integrat-svc.ioc-platform.svc:8080
+      # dmpv3test（数据管理平台 的 汇聚平台）
+      url: http://ioc-dts-integrat-svc:8080
+      # 备库数据资产统计结果
+      result-search: ${dts.integration.datasource.url}/dts/integration/statistic/dtsStatisticsResult/search?
+
+#计划任务配置
+schedule:
+  execution:
+    waitqueue: 0/5 * * * * ?
+  require-work-order:
+    statistics: 0 0 0 * * ?
+    # 数据资产统计 10分钟一次
+  data-asset-statistics: 0 0/10 * * * ?
+  sys:
+    oa-user-synchron: 0 1 0 * * ? #同步oa用户信息
+    oa-org-synchron: 0 0 1 * * ? #同步oa机构信息
+  service:
+    kong: 0/1 * * * * ?
+    paas: 0/2 * * * * ?
+
+ljdp:
+  security:
+    api:
+      skey: abdefghijklmnopqrstuvwxyz1234567890
+
+kafka:
+  topic1: datalake-topic1 #kafka事件发布
+  topic2: datalake-topic2 #kafka事件处理
+
+
+
